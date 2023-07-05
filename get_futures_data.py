@@ -16,6 +16,7 @@ DISPLAY_COLS = [
     "volume.value",
     "funding.value",
     "next_fr.value",
+    "open_interest.value",
     "open_interest_volume.value",
     "liquidations.long",
     "liquidations.short",
@@ -67,11 +68,31 @@ df["liq_mcap"] = (df["liquidations.long"] + df["liquidations.short"]) / df["mark
 ADDITIONAL_COLS = ["oi_mcap_change", "oi_mcap", "vol_mcap", "liq_mcap"]
 DISPLAY_COLS.extend(ADDITIONAL_COLS)
 
+df.drop(columns=[col for col in df.columns if col not in DISPLAY_COLS], inplace=True)
+df.rename(
+    columns={
+        "currency.value": "symbol",
+        "price.value": "price",
+        "change.value": "change",
+        "volume.value": "volume",
+        "funding.value": "fr",
+        "next_fr.value": "fr_next",
+        "open_interest.value": "oi",
+        "open_interest_volume.value": "oi_volume",
+        "liquidations.long": "liq_long",
+        "liquidations.short": "liq_short",
+        "correlation.btc.30": "corr_btc_30",
+        "correlation.eth.30": "corr_eth_30",
+    } , inplace=True
+)
+df.set_index("symbol", inplace=True)
+
+
+
 if df.empty:
     print("No data")
 else:
     for col in ADDITIONAL_COLS:
         print("Col name: ", col)
-        print(df[DISPLAY_COLS].sort_values(col, ascending=False).head(10))
+        print(df.sort_values(col, ascending=False).head(10))
         print("-------------------")
-a = 1
